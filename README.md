@@ -1,4 +1,4 @@
-# Simple JavaScript Drag & Drop Kanban Task Managment App
+# Simple JavaScript Drag & Drop Kanban Board
 
 ## What I Built
 
