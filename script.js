@@ -48,7 +48,7 @@ const addTask = (column, text) => {
 
   taskLi.addEventListener("dragstart", (evnt) => {
     taskLi.id = "draggedTask";
-
+    taskLi.classList.add("dragging");
     evnt.dataTransfer.effectAllowed = "move";
     // custom data for detecting valid drop
     evnt.dataTransfer.setData("task", "");
@@ -56,6 +56,7 @@ const addTask = (column, text) => {
 
   taskLi.addEventListener("dragend", (evnt) => {
     taskLi.removeAttribute("id");
+    taskLi.classList.remove("dragging");
   });
 };
 
@@ -130,12 +131,17 @@ for (const columnId of columnIdList) {
   taskColumn.addEventListener("dragover", (evnt) => {
     if (!evnt.dataTransfer.types.includes("task")) return;
     evnt.preventDefault();
+
+    taskColumn.classList.add("drag-over");
+
     movePlaceholder(taskColumn, evnt.clientY);
   });
 
   taskColumn.addEventListener("dragleave", (evnt) => {
     if (!evnt.dataTransfer.types.includes("task")) return;
     evnt.preventDefault();
+
+    taskColumn.classList.remove("drag-over");
 
     if (taskColumn.contains(evnt.relatedTarget)) return;
 
@@ -145,6 +151,8 @@ for (const columnId of columnIdList) {
   taskColumn.addEventListener("drop", (evnt) => {
     if (!evnt.dataTransfer.types.includes("task")) return;
     evnt.preventDefault();
+
+    taskColumn.classList.remove("drag-over");
 
     const draggedTask = document.getElementById("draggedTask");
     const taskList = taskColumn.querySelector("#taskList");
