@@ -7,6 +7,63 @@
     <link rel="stylesheet" href="./style.css" />
   </head>
   <body>
+    <h1>Drag and Drop Kanban Board</h1>
+    <div class="kanban-board">
+      <section class="kanban-col" id="todoCol">
+        <header>
+          <h2 class="col-title">Todo's</h2>
+          <span class="col-tag">0 Items</span>
+        </header>
+        <ul class="tasks" id="taskList">
+          <span class="empty-label">Drop task here</span>
+        </ul>
+        <footer>
+          <input
+            type="text"
+            class="task-input"
+            placeholder="New task"
+            id="taskInput"
+          />
+          <button class="add-btn" id="addTaskBtn">Add</button>
+        </footer>
+      </section>
+      <section class="kanban-col" id="inProgressCol">
+        <header>
+          <h2 class="col-title">In Progress</h2>
+          <span class="col-tag">0 Items</span>
+        </header>
+        <ul class="tasks" id="taskList">
+          <span class="empty-label">Drop task here</span>
+        </ul>
+        <footer>
+          <input
+            type="text"
+            class="task-input"
+            placeholder="New task"
+            id="taskInput"
+          />
+          <button class="add-btn" id="addTaskBtn">Add</button>
+        </footer>
+      </section>
+      <section class="kanban-col" id="doneCol">
+        <header>
+          <h2 class="col-title">Done</h2>
+          <span class="col-tag">0 Items</span>
+        </header>
+        <ul class="tasks" id="taskList">
+          <span class="empty-label">Drop task here</span>
+        </ul>
+        <footer>
+          <input
+            type="text"
+            class="task-input"
+            placeholder="New task"
+            id="taskInput"
+          />
+          <button class="add-btn" id="addTaskBtn">Add</button>
+        </footer>
+      </section>
+    </div>
     <script src="./script.js"></script>
   </body>
 </html>

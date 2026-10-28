@@ -1,15 +1,274 @@
 :root {
+  /* Color Palette - Deep Grays & Facebook Blue */
+  --color-main: #18191a;
+  --color-soft: #242526;
+  --color-surface: #3a3b3c;
+  --color-invert: #ffffff;
+  --color-muted: #b0b3b8;
+  --color-border: #3e4042;
+  --color-accent: #1877f2;
+  --color-hover: #2d88ff;
+  --color-danger: #e41e3f;
+  --color-success: #45bd62;
+
+  /* Typography */
+  --text-sm: 0.8125rem;
+  --text-base: 0.9375rem;
+  --text-lg: 1.0625rem;
+  --text-xl: 1.25rem;
+
+  /* Font Weights */
+  --font-normal: 400;
+  --font-medium: 500;
+  --font-semibold: 600;
+  --font-bold: 700;
+
+  /* Border Radii */
+  --rounded: 4px;
+  --rounded-md: 8px;
+  --rounded-lg: 12px;
 }
 
-*,
-*::before,
-*::after {
+* {
   box-sizing: border-box;
-  margin: 0;
   padding: 0;
+  margin: 0;
 }
 
 body {
-  max-width: 100vw;
+  width: 100%;
   min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  font-family:
+    "Inter",
+    system-ui,
+    -apple-system,
+    sans-serif;
+  font-size: var(--text-base);
+  font-weight: var(--font-normal);
+  background-color: var(--color-main);
+  color: var(--color-invert);
+  padding: 2rem 1rem;
+}
+
+h1 {
+  font-size: var(--text-xl);
+  font-weight: var(--font-bold);
+  text-align: center;
+  margin-bottom: 2rem;
+  letter-spacing: 0.5px;
+}
+
+/* Kanban Board Container */
+.kanban-board {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  align-items: stretch;
+}
+
+@media (min-width: 768px) {
+  .kanban-board {
+    flex-direction: row;
+    align-items: flex-start;
+  }
+}
+
+/* Individual Column */
+.kanban-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 520px;
+  background-color: var(--color-soft);
+  border: 1px solid var(--color-border);
+  border-radius: var(--rounded-lg);
+  padding: 1.25rem;
+  gap: 1.25rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* Column Header */
+.kanban-col header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.col-title {
+  font-size: var(--text-lg);
+  font-weight: var(--font-semibold);
+  color: var(--color-invert);
+}
+
+.col-tag {
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+  color: var(--color-muted);
+}
+
+/* Task List */
+.tasks {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  flex-grow: 1;
+  overflow-y: auto;
+  min-height: 100px;
+  position: relative;
+}
+
+.empty-label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  min-height: 200px;
+  margin: auto;
+  font-size: var(--text-base);
+  color: var(--color-muted);
+  user-select: none;
+  pointer-events: none;
+  text-align: center;
+}
+
+/* Automatically hide the placeholder if any task card exists in the list */
+.tasks:has(.task) .empty-label {
+  display: none;
+}
+
+/* Task Card */
+.task {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--rounded-md);
+  padding: 0.85rem 1rem;
+  cursor: grab;
+  transition:
+    transform 0.15s ease,
+    border-color 0.15s ease,
+    background-color 0.15s ease;
+  user-select: none;
+}
+
+.task:hover {
+  border-color: var(--color-muted);
+}
+
+.task:active {
+  cursor: grabbing;
+}
+
+.task.dragging {
+  opacity: 0.45;
+  transform: scale(0.98);
+}
+
+.task .text {
+  font-size: var(--text-base);
+  color: var(--color-invert);
+  word-break: break-word;
+}
+
+/* Delete / Remove Action */
+.task .remove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  padding: 0.25rem;
+  cursor: pointer;
+  border-radius: var(--rounded);
+  transition: background-color 0.15s ease;
+}
+
+.task .remove:hover {
+  background-color: rgba(228, 30, 63, 0.15);
+}
+
+.task .remove img {
+  width: 16px;
+  height: 16px;
+  display: block;
+  opacity: 0.7;
+  filter: invert(1);
+  transition: opacity 0.15s ease;
+}
+
+.task .remove:hover img {
+  opacity: 1;
+  filter: invert(24%) sepia(85%) saturate(5438%) hue-rotate(342deg)
+    brightness(93%) contrast(97%); /* Highlights to danger red */
+}
+
+/* Footer & Input Controls */
+.kanban-col footer {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: auto;
+  padding-top: 0.5rem;
+}
+
+.task-input {
+  flex: 1;
+  background-color: var(--color-main);
+  border: 1px solid var(--color-border);
+  border-radius: var(--rounded-md);
+  padding: 0.65rem 0.85rem;
+  color: var(--color-invert);
+  font-size: var(--text-base);
+  font-family: inherit;
+  outline: none;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.task-input::placeholder {
+  color: var(--color-muted);
+}
+
+.task-input:focus {
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 2px rgba(24, 119, 242, 0.2);
+}
+
+.add-btn {
+  background-color: var(--color-accent);
+  color: var(--color-invert);
+  border: none;
+  border-radius: var(--rounded-md);
+  padding: 0.65rem 1.15rem;
+  font-size: var(--text-base);
+  font-weight: var(--font-medium);
+  font-family: inherit;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.add-btn:hover {
+  background-color: var(--color-hover);
+}
+
+.add-btn:active {
+  transform: translateY(1px);
+}
+
+/* Drag-over indicator for drag & drop scripts */
+.kanban-col.drag-over {
+  border-color: var(--color-accent);
+  background-color: rgba(36, 37, 38, 0.8);
 }
