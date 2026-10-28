@@ -146,6 +146,14 @@ h1 {
   display: none;
 }
 
+/* Task placeholder */
+
+.task-placeholder {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--rounded-md);
+}
+
 /* Task Card */
 .task {
   display: flex;

@@ -1,14 +1,18 @@
 const TASKS = [
   {
-    text: "Review project specifications",
+    text: "Find out where Soul Stone is",
     colId: "todoCol",
   },
   {
-    text: "Implement database schema updates",
-    colId: "inProgressCol",
+    text: "Collect Time Stone from Dr. Strange",
+    colId: "todoCol",
   },
   {
-    text: "Review project specifications",
+    text: "Collect Mind Stone from Vision",
+    colId: "todoCol",
+  },
+  {
+    text: "Collect Reality Stone from the Collector",
     colId: "inProgressCol",
   },
 ];
@@ -34,14 +38,74 @@ const addTask = (column, text) => {
   const taskCount = column.querySelectorAll(".task").length;
   column.querySelector(".col-tag").textContent = `${taskCount} items`;
 
-  removeBtn.addEventListener("click", (evt) => {
+  removeBtn.addEventListener("click", (evnt) => {
     taskLi.remove();
     const taskCount = column.querySelectorAll(".task").length;
     column.querySelector(".col-tag").textContent = `${taskCount} items`;
   });
+
+  // Drag and Drop Feature Code
+
+  taskLi.addEventListener("dragstart", (evnt) => {
+    taskLi.id = "draggedTask";
+
+    evnt.dataTransfer.effectAllowed = "move";
+    // custom data for detecting valid drop
+    evnt.dataTransfer.setData("task", "");
+  });
+
+  taskLi.addEventListener("dragend", (evnt) => {
+    taskLi.removeAttribute("id");
+  });
 };
 
 const columnIdList = ["todoCol", "inProgressCol", "doneCol"];
+
+const createPlaceholder = (taskElm) => {
+  const placeholder = document.createElement("li");
+  placeholder.classList.add("task-placeholder");
+  placeholder.id = "taskPlaceholder";
+  placeholder.style.height = `${taskElm.offsetHeight}px`;
+
+  return placeholder;
+};
+
+const movePlaceholder = (column, axisY) => {
+  const draggedTask = document.getElementById("draggedTask");
+  const taskList = column.querySelector("#taskList");
+  const tasks = taskList.querySelectorAll("li");
+  const existingPlaceholder = document.getElementById("taskPlaceholder");
+
+  if (tasks.length === 0) return;
+
+  if (existingPlaceholder) {
+    const { top, bottom } = existingPlaceholder.getBoundingClientRect();
+    if (top <= axisY && bottom >= axisY) return;
+  }
+
+  for (const task of tasks) {
+    if (task.getBoundingClientRect().bottom >= axisY) {
+      if (task === existingPlaceholder) return;
+
+      existingPlaceholder?.remove();
+
+      if (task === draggedTask || task.previousElementSibling === draggedTask)
+        return;
+
+      taskList.insertBefore(
+        existingPlaceholder ?? createPlaceholder(draggedTask),
+        task,
+      );
+      return;
+    }
+  }
+
+  existingPlaceholder?.remove();
+
+  if (taskList.lastElementChild === draggedTask) return;
+
+  taskList.append(existingPlaceholder ?? createPlaceholder(draggedTask));
+};
 
 for (const columnId of columnIdList) {
   const taskColumn = document.getElementById(columnId);
@@ -50,7 +114,7 @@ for (const columnId of columnIdList) {
     addTask(taskColumn, task.text);
   });
 
-  taskColumn.querySelector("#addTaskBtn").addEventListener("click", (evt) => {
+  taskColumn.querySelector("#addTaskBtn").addEventListener("click", (evnt) => {
     const taskInput = taskColumn.querySelector("#taskInput");
     const value = taskInput.value;
 
@@ -59,5 +123,40 @@ for (const columnId of columnIdList) {
     addTask(taskColumn, value);
 
     taskInput.value = "";
+  });
+
+  // Drag and Drop Feature Code
+
+  taskColumn.addEventListener("dragover", (evnt) => {
+    if (!evnt.dataTransfer.types.includes("task")) return;
+    evnt.preventDefault();
+    movePlaceholder(taskColumn, evnt.clientY);
+  });
+
+  taskColumn.addEventListener("dragleave", (evnt) => {
+    if (!evnt.dataTransfer.types.includes("task")) return;
+    evnt.preventDefault();
+
+    if (taskColumn.contains(evnt.relatedTarget)) return;
+
+    document.getElementById("taskPlaceholder")?.remove();
+  });
+
+  taskColumn.addEventListener("drop", (evnt) => {
+    if (!evnt.dataTransfer.types.includes("task")) return;
+    evnt.preventDefault();
+
+    const draggedTask = document.getElementById("draggedTask");
+    const taskList = taskColumn.querySelector("#taskList");
+
+    if (taskList.querySelectorAll("li.task").length) {
+      const taskPlaceholder = document.getElementById("taskPlaceholder");
+
+      if (!taskPlaceholder) return;
+
+      taskPlaceholder.replaceWith(draggedTask);
+    } else {
+      taskList.append(draggedTask);
+    }
   });
 }
