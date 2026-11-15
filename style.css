@@ -49,5 +49,144 @@ body {
   font-weight: var(--font-normal);
   background-color: var(--color-main);
   color: var(--color-invert);
-  padding: 2rem 1rem;
+}
+
+.container {
+  width: 100%;
+  max-width: 1600px;
+  padding: 1rem;
+  margin-inline: auto;
+}
+
+header .container,
+footer .container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.header-logo {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: var(--text-lg);
+  font-weight: var(--font-bold);
+}
+
+.header-logo span {
+  display: inline-block;
+  --size: 18px;
+  width: var(--size);
+  height: var(--size);
+  background-color: var(--color-accent);
+  border-radius: var(--rounded);
+}
+
+main {
+  flex-grow: 1;
+  display: flex;
+}
+
+footer {
+  font-size: var(--text-sm);
+}
+
+footer a {
+  text-decoration: none;
+  font-weight: var(--font-bold);
+}
+
+.board-wraper {
+  flex-grow: 1;
+  overflow-x: auto;
+}
+
+.kanban-board {
+  display: flex;
+  justify-content: start;
+  gap: 1rem;
+}
+
+.column {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+  border-radius: var(--rounded);
+  background-color: var(--color-soft);
+}
+
+.col-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.col-title {
+  font-size: var(--text-xl);
+  font-weight: var(--font-bold);
+}
+
+.task-counts {
+  font-size: var(--text-lg);
+  font-weight: var(--font-bold);
+}
+
+.col-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  min-height: 100px;
+  padding-block: 1rem;
+  padding-inline: 0.4rem;
+  position: relative;
+}
+
+.empty-placeholder {
+  display: grid;
+  place-items: center;
+  position: absolute;
+  inset: 0;
+  color: var(--color-muted);
+}
+
+.col-footer {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.task-input {
+  padding: 0.6rem;
+  background-color: var(--color-surface);
+  border: 2px solid var(--color-border);
+  border-radius: var(--rounded);
+  outline: none;
+  font-size: var(--text-lg);
+  color: var(--color-invert);
+  transition: all 180ms ease-in-out;
+}
+
+.task-input:focus {
+  border-color: var(--color-accent);
+}
+
+.add-btn {
+  padding: 0.6rem;
+  background-color: var(--color-accent);
+  border: 2px solid var(--color-border);
+  border-radius: var(--rounded);
+  outline: none;
+  font-size: var(--text-lg);
+  color: var(--color-invert);
+  cursor: pointer;
+  transition: all 180ms ease-in-out;
+}
+
+.add-btn:hover {
+  background-color: var(--color-hover);
+}
+
+.add-btn:active {
+  opacity: 0.8;
 }
