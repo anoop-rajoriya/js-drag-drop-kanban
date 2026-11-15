@@ -1,0 +1,53 @@
+:root {
+  /* Color Palette - Deep Grays & Facebook Blue */
+  --color-main: #18191a;
+  --color-soft: #242526;
+  --color-surface: #3a3b3c;
+  --color-invert: #ffffff;
+  --color-muted: #b0b3b8;
+  --color-border: #3e4042;
+  --color-accent: #1877f2;
+  --color-hover: #2d88ff;
+  --color-danger: #e41e3f;
+  --color-success: #45bd62;
+
+  /* Typography */
+  --text-sm: 0.8125rem;
+  --text-base: 0.9375rem;
+  --text-lg: 1.0625rem;
+  --text-xl: 1.25rem;
+
+  /* Font Weights */
+  --font-normal: 400;
+  --font-medium: 500;
+  --font-semibold: 600;
+  --font-bold: 700;
+
+  /* Border Radii */
+  --rounded: 4px;
+  --rounded-md: 8px;
+  --rounded-lg: 12px;
+}
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+body {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  font-family:
+    "Inter",
+    system-ui,
+    -apple-system,
+    sans-serif;
+  font-size: var(--text-base);
+  font-weight: var(--font-normal);
+  background-color: var(--color-main);
+  color: var(--color-invert);
+  padding: 2rem 1rem;
+}
