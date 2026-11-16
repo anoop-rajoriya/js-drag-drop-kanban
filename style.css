@@ -65,6 +65,11 @@ footer .container {
   justify-content: space-between;
 }
 
+footer .container {
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
 .header-logo {
   display: flex;
   align-items: center;
@@ -93,7 +98,7 @@ footer {
 
 footer a {
   text-decoration: none;
-  font-weight: var(--font-bold);
+  color: var(--color-accent);
 }
 
 .board-wraper {
@@ -103,15 +108,16 @@ footer a {
 
 .kanban-board {
   display: flex;
-  justify-content: start;
+  align-items: start;
   gap: 1rem;
 }
 
 .column {
+  width: 320px;
   flex-shrink: 0;
   display: flex;
   flex-direction: column;
-  padding: 1rem;
+  justify-content: start;
   border-radius: var(--rounded);
   background-color: var(--color-soft);
 }
@@ -120,6 +126,8 @@ footer a {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  padding-inline: 1rem;
+  padding-top: 1rem;
 }
 
 .col-title {
@@ -136,7 +144,7 @@ footer a {
   display: flex;
   flex-direction: column;
   gap: 0.4rem;
-  min-height: 100px;
+  min-height: 140px;
   padding-block: 1rem;
   padding-inline: 0.4rem;
   position: relative;
@@ -154,13 +162,15 @@ footer a {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+  padding-inline: 0.4rem;
+  padding-bottom: 1rem;
 }
 
 .task-input {
   padding: 0.6rem;
   background-color: var(--color-surface);
   border: 2px solid var(--color-border);
-  border-radius: var(--rounded);
+  border-radius: var(--rounded-md);
   outline: none;
   font-size: var(--text-lg);
   color: var(--color-invert);
@@ -175,12 +185,12 @@ footer a {
   padding: 0.6rem;
   background-color: var(--color-accent);
   border: 2px solid var(--color-border);
-  border-radius: var(--rounded);
+  border-radius: var(--rounded-md);
   outline: none;
   font-size: var(--text-lg);
   color: var(--color-invert);
   cursor: pointer;
-  transition: all 180ms ease-in-out;
+  transition: all 100ms ease;
 }
 
 .add-btn:hover {
@@ -189,4 +199,71 @@ footer a {
 
 .add-btn:active {
   opacity: 0.8;
+}
+
+.task-card {
+  padding: 0.6rem;
+  border-radius: var(--rounded-md);
+  background-color: var(--color-surface);
+}
+
+.task-text {
+  font-size: var(--text-lg);
+}
+
+.task-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 1rem;
+}
+
+.task-date {
+  font-size: var(--text-base);
+  color: var(--color-muted);
+}
+
+.remove-btn {
+  --size: 25px;
+  width: var(--size);
+  height: var(--size);
+  background-color: transparent;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  transition: all 100ms ease;
+}
+
+.remove-btn:hover {
+  opacity: 0.6;
+}
+.remove-btn:active {
+  opacity: 1;
+}
+
+.remove-btn img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px; /* For the horizontal scrollbar */
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-soft); /* Dark background matching the columns */
+  border-radius: var(--rounded-md);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-border); /* Slightly lighter gray for the thumb */
+  border-radius: var(--rounded-md);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-muted); /* Lighter gray when hovering */
 }

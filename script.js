@@ -1,5 +1,17 @@
 const columns = {
-  todos: { title: "Todo's", tasks: [] },
+  todos: {
+    title: "Todo's",
+    tasks: [
+      {
+        text: "Implement task card rendering",
+        timestamp: 1794822841911,
+      },
+      {
+        text: "Implement create and delete operation",
+        timestamp: 1794822841906,
+      },
+    ],
+  },
   inprogress: { title: "In Progress", tasks: [] },
   inreview: { title: "In Review", tasks: [] },
   done: { title: "Done", tasks: [] },
@@ -31,6 +43,67 @@ const createElement = ({ elmName = "div", children = [], ...attr } = {}) => {
   return elm;
 };
 
+const formateTimestamp = (timestamp) => {
+  const inputDate = new Date(timestamp);
+  const today = new Date();
+
+  const isToday =
+    inputDate.getDate() === today.getDate() &&
+    inputDate.getMonth() === today.getMonth() &&
+    inputDate.getFullYear() === today.getFullYear();
+
+  if (isToday) {
+    return "Today";
+  }
+
+  inputDate.toLocaleDateString("en-GB", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
+};
+
+const createCards = (tasks) => {
+  if (!tasks.length) return null;
+
+  return tasks.map(({ text, timestamp }) => {
+    const cardText = createElement({
+      elmName: "p",
+      children: text,
+      class: "task-text",
+    });
+    const cardDate = createElement({
+      elmName: "span",
+      children: formateTimestamp(timestamp),
+      class: "task-date",
+    });
+    const binIcon = createElement({
+      elmName: "img",
+      src: "./assets/delete-bin-line.svg",
+      alt: "delete bin icon",
+    });
+    const removeBtn = createElement({
+      elmName: "button",
+      children: binIcon,
+      class: "remove-btn",
+    });
+
+    const cardFooter = createElement({
+      children: [cardDate, removeBtn],
+      class: "task-footer",
+    });
+
+    const card = createElement({
+      elmName: "article",
+      children: [cardText, cardFooter],
+      class: "task-card",
+      id: timestamp,
+    });
+
+    return card;
+  });
+};
+
 const renderColumn = ({ id, title, tasks }) => {
   const colTitle = createElement({
     elmName: "h2",
@@ -51,8 +124,9 @@ const renderColumn = ({ id, title, tasks }) => {
     children: "Drop Here",
     class: "empty-placeholder",
   });
+
   const colBody = createElement({
-    children: tasks.length == 0 ? emptyPlaceholder : [],
+    children: createCards(tasks) ?? emptyPlaceholder,
     class: "col-body",
   });
 
