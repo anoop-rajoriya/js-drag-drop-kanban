@@ -56,11 +56,24 @@ const formateTimestamp = (timestamp) => {
     return "Today";
   }
 
-  inputDate.toLocaleDateString("en-GB", {
+  return inputDate.toLocaleDateString("en-GB", {
     day: "numeric",
     month: "short",
     year: "numeric",
   });
+};
+
+const removeTask = (targetTimestamp) => {
+  for (const [columnId, column] of Object.entries(columns)) {
+    const taskIndex = column.tasks.findIndex(
+      (task) => task.timestamp === targetTimestamp,
+    );
+
+    if (taskIndex !== -1) {
+      column.tasks.splice(taskIndex, 1);
+      renderColumn(columnId);
+    }
+  }
 };
 
 const createCards = (tasks) => {
@@ -88,6 +101,8 @@ const createCards = (tasks) => {
       class: "remove-btn",
     });
 
+    removeBtn.addEventListener("click", (event) => removeTask(timestamp));
+
     const cardFooter = createElement({
       children: [cardDate, removeBtn],
       class: "task-footer",
@@ -104,7 +119,19 @@ const createCards = (tasks) => {
   });
 };
 
-const renderColumn = ({ id, title, tasks }) => {
+const addTask = (text, columnId) => {
+  if (text.trim() === "") return;
+  if (!columns.hasOwnProperty(columnId)) return;
+
+  columns[columnId].tasks.push({ text, timestamp: Date.now() });
+  renderColumn(columnId);
+};
+
+const renderColumn = (columnId) => {
+  if (!columns.hasOwnProperty(columnId)) return;
+
+  const { title, tasks } = columns[columnId];
+
   const colTitle = createElement({
     elmName: "h2",
     children: title,
@@ -134,8 +161,8 @@ const renderColumn = ({ id, title, tasks }) => {
     elmName: "input",
     class: "task-input",
     type: "text",
-    name: `${id}-input`,
-    id: `${id}Input`,
+    name: `${columnId}-input`,
+    id: `${columnId}Input`,
     placeholder: "type here...",
   });
   const button = createElement({
@@ -143,6 +170,9 @@ const renderColumn = ({ id, title, tasks }) => {
     children: "Add Task",
     class: "add-btn",
   });
+
+  button.addEventListener("click", (event) => addTask(input.value, columnId));
+
   const colFooter = createElement({
     children: [input, button],
     class: "col-footer",
@@ -152,12 +182,12 @@ const renderColumn = ({ id, title, tasks }) => {
     elmName: "section",
     children: [colHeader, colBody, colFooter],
     class: "column",
-    id,
+    id: columnId,
   });
 
   const board = document.querySelector("#kanbanBoard");
 
-  const oldColumn = board.querySelector(`#${id}`);
+  const oldColumn = board.querySelector(`#${columnId}`);
 
   if (board.contains(oldColumn)) {
     oldColumn.replaceWith(column);
@@ -168,8 +198,5 @@ const renderColumn = ({ id, title, tasks }) => {
 
 for (const key in columns) {
   if (!Object.hasOwn(columns, key)) continue;
-
-  const { title, tasks } = columns[key];
-
-  renderColumn({ id: key, title, tasks });
+  renderColumn(key);
 }
