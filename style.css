@@ -119,8 +119,14 @@ footer a {
   display: flex;
   flex-direction: column;
   justify-content: start;
+  border: 2px solid var(--color-soft);
   border-radius: var(--rounded);
   background-color: var(--color-soft);
+  transition: all 100ms ease;
+}
+
+.column.dragover {
+  border-color: var(--color-accent);
 }
 
 .col-header {
@@ -206,6 +212,16 @@ footer a {
   padding: 0.6rem;
   border-radius: var(--rounded-md);
   background-color: var(--color-surface);
+  transition: opacity 100ms ease;
+}
+
+.task-card-placeholder {
+  border-radius: var(--rounded-md);
+  background-color: var(--color-surface);
+}
+
+.task-card#draggedTask {
+  opacity: 0.4;
 }
 
 .task-text {
