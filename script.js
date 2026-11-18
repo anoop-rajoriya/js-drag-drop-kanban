@@ -29,11 +29,8 @@ const createElement = ({ elmName = "div", children = [], ...attr } = {}) => {
   }
 
   for (const key in attr) {
-    if (!Object.hasOwn(attr, key)) continue;
-
     const value = attr[key];
-
-    if (elm.hasOwnProperty(key)) {
+    if (key in elm && key !== "class" && key !== "style") {
       elm[key] = value;
     } else {
       elm.setAttribute(key, value);
@@ -43,7 +40,7 @@ const createElement = ({ elmName = "div", children = [], ...attr } = {}) => {
   return elm;
 };
 
-const formateTimestamp = (timestamp) => {
+const formatTimestamp = (timestamp) => {
   const inputDate = new Date(Number(timestamp));
   const today = new Date();
 
@@ -87,6 +84,7 @@ const onTaskDragStart = (card, event) => {
 
 const onTaskDragEnd = (card, event) => {
   card.removeAttribute("id");
+  document.getElementById("taskPlaceholder")?.remove();
 };
 
 const createCards = (tasks) => {
@@ -100,7 +98,7 @@ const createCards = (tasks) => {
     });
     const cardDate = createElement({
       elmName: "span",
-      children: formateTimestamp(timestamp),
+      children: formatTimestamp(timestamp),
       class: "task-date",
       id: timestamp,
     });
@@ -159,6 +157,10 @@ const onTaskDragover = (column, event) => {
 
   event.preventDefault();
 
+  if (!column.classList.contains("dragover")) {
+    column.classList.add("dragover");
+  }
+
   const existingTaskPlaceholder = document.getElementById("taskPlaceholder");
   const draggedTask = document.getElementById("draggedTask");
   const taskContainer = column.querySelector(".col-body");
@@ -194,6 +196,16 @@ const onTaskDragover = (column, event) => {
   );
 };
 
+const onTaskDragleave = (column, event) => {
+  if (column.contains(event.relatedTarget)) return;
+
+  if (column.classList.contains("dragover")) {
+    column.classList.remove("dragover");
+  }
+
+  document.getElementById("taskPlaceholder")?.remove();
+};
+
 const onTaskDrop = (dropZone, event) => {
   const emptyPlaceholder = dropZone.querySelector(".empty-placeholder");
 
@@ -209,33 +221,30 @@ const onTaskDrop = (dropZone, event) => {
 
   const taskIndex = [
     ...(document.querySelector(`#${sourceColId} .col-body`)?.children || []),
-  ].findIndex((task) => task === draggedTask);
+  ]
+    .filter((task) => task.classList.contains("task-card"))
+    .findIndex((task) => task === draggedTask);
 
   const placeholderIndex = [
     ...(document.querySelector(`#${destinationColId} .col-body`)?.children ||
       []),
-  ].findIndex((task) => task === taskPlaceholder);
+  ]
+    .filter((task) => task.classList.contains("task-card"))
+    .findIndex((task) => task === taskPlaceholder);
 
-  const taskText = draggedTask.querySelector(".task-text").textContent;
-  const timestamp = draggedTask.querySelector(".task-date").id;
+  const { text, timestamp } = columns[sourceColId].tasks[taskIndex];
 
   columns[sourceColId].tasks.splice(taskIndex, 1);
   columns[destinationColId].tasks.splice(placeholderIndex, 0, {
-    text: taskText,
+    text,
     timestamp,
   });
 
-  document.querySelector(`#${sourceColId} .task-counts`).textContent =
-    columns[sourceColId].tasks.length;
-  document.querySelector(`#${destinationColId} .task-counts`).textContent =
-    columns[sourceColId].tasks.length;
-
-  draggedTask.remove();
-  taskPlaceholder.replaceWith(draggedTask);
-  console.log(columns);
+  renderColumn(sourceColId);
+  renderColumn(destinationColId);
 };
 
-const renderColumn = (columnId) => {
+function renderColumn(columnId) {
   if (!columns.hasOwnProperty(columnId)) return;
 
   const { title, tasks } = columns[columnId];
@@ -294,6 +303,9 @@ const renderColumn = (columnId) => {
   });
 
   column.addEventListener("dragover", (event) => onTaskDragover(column, event));
+  column.addEventListener("dragleave", (event) =>
+    onTaskDragleave(column, event),
+  );
   column.addEventListener("drop", (event) => onTaskDrop(colBody, event));
 
   const board = document.querySelector("#kanbanBoard");
@@ -305,7 +317,7 @@ const renderColumn = (columnId) => {
   } else {
     board.appendChild(column);
   }
-};
+}
 
 for (const key in columns) {
   if (!Object.hasOwn(columns, key)) continue;

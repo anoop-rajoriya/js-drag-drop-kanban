@@ -101,7 +101,7 @@ footer a {
   color: var(--color-accent);
 }
 
-.board-wraper {
+.board-wrapper {
   flex-grow: 1;
   overflow-x: auto;
 }
