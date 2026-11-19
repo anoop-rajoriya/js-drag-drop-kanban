@@ -122,7 +122,7 @@ footer a {
   border: 2px solid var(--color-soft);
   border-radius: var(--rounded);
   background-color: var(--color-soft);
-  transition: all 100ms ease;
+  transition: border-color 100ms ease;
 }
 
 .column.dragover {
@@ -165,6 +165,10 @@ footer a {
   color: var(--color-muted);
 }
 
+.col-body:has(.task-card-placeholder) .empty-placeholder {
+  display: none;
+}
+
 .col-footer {
   display: flex;
   flex-direction: column;
@@ -181,7 +185,7 @@ footer a {
   outline: none;
   font-size: var(--text-lg);
   color: var(--color-invert);
-  transition: all 180ms ease-in-out;
+  transition: border-color 180ms ease-in-out;
 }
 
 .task-input:focus {
@@ -197,7 +201,9 @@ footer a {
   font-size: var(--text-lg);
   color: var(--color-invert);
   cursor: pointer;
-  transition: all 100ms ease;
+  transition-property: background-color, opacity, border;
+  transition-duration: 100ms;
+  transition-timing-function: ease;
 }
 
 .add-btn:hover {
@@ -213,6 +219,8 @@ footer a {
   border-radius: var(--rounded-md);
   background-color: var(--color-surface);
   transition: opacity 100ms ease;
+  cursor: grab;
+  user-select: none;
 }
 
 .task-card-placeholder {
@@ -226,6 +234,8 @@ footer a {
 
 .task-text {
   font-size: var(--text-lg);
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 .task-footer {
@@ -248,7 +258,7 @@ footer a {
   border: none;
   outline: none;
   cursor: pointer;
-  transition: all 100ms ease;
+  transition: opacity 100ms ease;
 }
 
 .remove-btn:hover {

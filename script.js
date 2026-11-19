@@ -1,4 +1,4 @@
-const columns = {
+const DEFAULT_COLS = {
   todos: {
     title: "Todo's",
     tasks: [
@@ -16,6 +16,13 @@ const columns = {
   inreview: { title: "In Review", tasks: [] },
   done: { title: "Done", tasks: [] },
 };
+
+const STORAGE_KEY = "kanban-board-state";
+
+const columns = JSON.parse(localStorage.getItem(STORAGE_KEY)) ?? DEFAULT_COLS;
+
+const saveState = () =>
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(columns));
 
 const createElement = ({ elmName = "div", children = [], ...attr } = {}) => {
   const elm = document.createElement(elmName);
@@ -60,16 +67,11 @@ const formatTimestamp = (timestamp) => {
   });
 };
 
-const removeTask = (targetTimestamp) => {
-  for (const [columnId, column] of Object.entries(columns)) {
-    const taskIndex = column.tasks.findIndex(
-      (task) => task.timestamp === targetTimestamp,
-    );
-
-    if (taskIndex !== -1) {
-      column.tasks.splice(taskIndex, 1);
-      renderColumn(columnId);
-    }
+const removeTask = (columnId, taskIndex) => {
+  if (columnId in columns) {
+    columns[columnId].tasks.splice(taskIndex, 1);
+    saveState();
+    renderColumn(columnId);
   }
 };
 
@@ -87,20 +89,20 @@ const onTaskDragEnd = (card, event) => {
   document.getElementById("taskPlaceholder")?.remove();
 };
 
-const createCards = (tasks) => {
+const createCards = (tasks, columnId) => {
   if (!tasks.length) return null;
 
-  return tasks.map(({ text, timestamp }) => {
+  return tasks.map(({ text, timestamp }, index) => {
     const cardText = createElement({
       elmName: "p",
       children: text,
       class: "task-text",
     });
     const cardDate = createElement({
-      elmName: "span",
+      elmName: "time",
       children: formatTimestamp(timestamp),
       class: "task-date",
-      id: timestamp,
+      dateTime: new Date(Number(timestamp)).toISOString(),
     });
     const binIcon = createElement({
       elmName: "img",
@@ -111,9 +113,10 @@ const createCards = (tasks) => {
       elmName: "button",
       children: binIcon,
       class: "remove-btn",
+      "area-label": `Delete task: ${text}`,
     });
 
-    removeBtn.addEventListener("click", (event) => removeTask(timestamp));
+    removeBtn.addEventListener("click", (event) => removeTask(columnId, index));
 
     const cardFooter = createElement({
       children: [cardDate, removeBtn],
@@ -134,12 +137,18 @@ const createCards = (tasks) => {
   });
 };
 
-const addTask = (text, columnId) => {
+const addTask = (text, columnId, event) => {
+  event.preventDefault();
+
   if (text.trim() === "") return;
   if (!columns.hasOwnProperty(columnId)) return;
 
   columns[columnId].tasks.push({ text, timestamp: Date.now() });
+  saveState();
+
   renderColumn(columnId);
+  console.log(document.querySelector(`${columnId} .col-footer input`));
+  document.getElementById(`${columnId}Input`)?.focus();
 };
 
 const makeTaskPlaceholder = (draggedTask) => {
@@ -214,7 +223,7 @@ const onTaskDrop = (dropZone, event) => {
   const taskPlaceholder = document.getElementById("taskPlaceholder");
   const draggedTask = document.getElementById("draggedTask");
 
-  if (!taskPlaceholder) return;
+  if (!taskPlaceholder || !draggedTask) return;
 
   const sourceColId = draggedTask.closest(".column").id;
   const destinationColId = taskPlaceholder.closest(".column").id;
@@ -229,9 +238,10 @@ const onTaskDrop = (dropZone, event) => {
     ...(document.querySelector(`#${destinationColId} .col-body`)?.children ||
       []),
   ]
-    .filter((task) => task.classList.contains("task-card"))
+    .filter((task) => task !== draggedTask)
     .findIndex((task) => task === taskPlaceholder);
 
+  console.log(placeholderIndex, taskIndex);
   const { text, timestamp } = columns[sourceColId].tasks[taskIndex];
 
   columns[sourceColId].tasks.splice(taskIndex, 1);
@@ -239,9 +249,13 @@ const onTaskDrop = (dropZone, event) => {
     text,
     timestamp,
   });
+  saveState();
 
   renderColumn(sourceColId);
-  renderColumn(destinationColId);
+
+  if (sourceColId !== destinationColId) {
+    renderColumn(destinationColId);
+  }
 };
 
 function renderColumn(columnId) {
@@ -270,7 +284,7 @@ function renderColumn(columnId) {
   });
 
   const colBody = createElement({
-    children: createCards(tasks) ?? emptyPlaceholder,
+    children: createCards(tasks, columnId) ?? emptyPlaceholder,
     class: "col-body",
   });
 
@@ -286,14 +300,18 @@ function renderColumn(columnId) {
     elmName: "button",
     children: "Add Task",
     class: "add-btn",
+    type: "submit",
   });
 
-  button.addEventListener("click", (event) => addTask(input.value, columnId));
-
   const colFooter = createElement({
+    elmName: "form",
     children: [input, button],
     class: "col-footer",
   });
+
+  colFooter.addEventListener("submit", (event) =>
+    addTask(input.value, columnId, event),
+  );
 
   const column = createElement({
     elmName: "section",
