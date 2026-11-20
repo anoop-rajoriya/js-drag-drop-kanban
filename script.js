@@ -3,10 +3,12 @@ const DEFAULT_COLS = {
     title: "Todo's",
     tasks: [
       {
+        id: "d24a5ec9-9b54-42c2-9665-e7840afe7f8f",
         text: "Implement task card rendering",
         timestamp: 1794822841911,
       },
       {
+        id: "6577feda-ae9a-4317-b1bf-fcc336fa178c",
         text: "Implement create and delete operation",
         timestamp: 1794822841906,
       },
@@ -19,7 +21,14 @@ const DEFAULT_COLS = {
 
 const STORAGE_KEY = "kanban-board-state";
 
-const columns = JSON.parse(localStorage.getItem(STORAGE_KEY)) ?? DEFAULT_COLS;
+let columns = null;
+
+try {
+  columns = JSON.parse(localStorage.getItem(STORAGE_KEY)) || DEFAULT_COLS;
+} catch (error) {
+  console.error("Failed to parse saved board state", error);
+  columns = DEFAULT_COLS;
+}
 
 const saveState = () =>
   localStorage.setItem(STORAGE_KEY, JSON.stringify(columns));
@@ -113,7 +122,7 @@ const createCards = (tasks, columnId) => {
       elmName: "button",
       children: binIcon,
       class: "remove-btn",
-      "area-label": `Delete task: ${text}`,
+      "aria-label": `Delete task: ${text}`,
     });
 
     removeBtn.addEventListener("click", (event) => removeTask(columnId, index));
@@ -143,11 +152,14 @@ const addTask = (text, columnId, event) => {
   if (text.trim() === "") return;
   if (!columns.hasOwnProperty(columnId)) return;
 
-  columns[columnId].tasks.push({ text, timestamp: Date.now() });
+  columns[columnId].tasks.push({
+    id: crypto.randomUUID(),
+    text: text.trim(),
+    timestamp: Date.now(),
+  });
   saveState();
 
   renderColumn(columnId);
-  console.log(document.querySelector(`${columnId} .col-footer input`));
   document.getElementById(`${columnId}Input`)?.focus();
 };
 
@@ -216,6 +228,8 @@ const onTaskDragleave = (column, event) => {
 };
 
 const onTaskDrop = (dropZone, event) => {
+  event.preventDefault();
+
   const emptyPlaceholder = dropZone.querySelector(".empty-placeholder");
 
   if (!!emptyPlaceholder) emptyPlaceholder.remove();
@@ -241,7 +255,6 @@ const onTaskDrop = (dropZone, event) => {
     .filter((task) => task !== draggedTask)
     .findIndex((task) => task === taskPlaceholder);
 
-  console.log(placeholderIndex, taskIndex);
   const { text, timestamp } = columns[sourceColId].tasks[taskIndex];
 
   columns[sourceColId].tasks.splice(taskIndex, 1);
@@ -257,6 +270,13 @@ const onTaskDrop = (dropZone, event) => {
     renderColumn(destinationColId);
   }
 };
+
+/*
+Note: Improvement:
+  Currently renderColumn update the whole column ui
+  but it can be improved by updating 
+  only task counts and tasks (partial update)
+*/
 
 function renderColumn(columnId) {
   if (!columns.hasOwnProperty(columnId)) return;
@@ -295,6 +315,7 @@ function renderColumn(columnId) {
     name: `${columnId}-input`,
     id: `${columnId}Input`,
     placeholder: "type here...",
+    "aria-label": `Add task to ${title}`,
   });
   const button = createElement({
     elmName: "button",
